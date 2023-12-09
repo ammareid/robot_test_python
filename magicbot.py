@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import time
 from datetime import datetime
 from rplidar import RPLidar
-
+motion_happened = True
 
 # Set GPIO mode and pins
 GPIO.setmode(GPIO.BCM)
@@ -48,6 +48,8 @@ def go_right(angle):
     GPIO.output(IN3, GPIO.LOW)
     GPIO.output(IN4, GPIO.HIGH)
     time.sleep(angle)  # Adjust the sleep duration based on gyro readings
+    motion_happened=True
+    
 
 # Function to go left
 def go_left(angle):
@@ -56,6 +58,7 @@ def go_left(angle):
     GPIO.output(IN3, GPIO.HIGH)
     GPIO.output(IN4, GPIO.LOW)
     time.sleep(angle)  # Adjust the sleep duration based on gyro readings
+    motion_happened=True
 
 # Function to change motor speed
 def change_speed(duty_cycle):
@@ -102,7 +105,10 @@ while(True):
             
             
             
-            if right_object_detected and left_object_detected:
+            if(motion_happened==True)
+                go_forward()
+                motion_happened==False
+            elif right_object_detected and left_object_detected:
                 #go_left(2)
                 print("Full left")
                 time.sleep(2)
