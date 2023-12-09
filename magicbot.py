@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import time
 from datetime import datetime
 from rplidar import RPLidar
-motion_happened = True
+ignore_scan = True
 
 # Set GPIO mode and pins
 GPIO.setmode(GPIO.BCM)
@@ -48,7 +48,7 @@ def go_right(angle):
     GPIO.output(IN3, GPIO.LOW)
     GPIO.output(IN4, GPIO.HIGH)
     time.sleep(angle)  # Adjust the sleep duration based on gyro readings
-    motion_happened=True
+    ignore_scan=True
     
 
 # Function to go left
@@ -58,7 +58,7 @@ def go_left(angle):
     GPIO.output(IN3, GPIO.HIGH)
     GPIO.output(IN4, GPIO.LOW)
     time.sleep(angle)  # Adjust the sleep duration based on gyro readings
-    motion_happened=True
+    ignore_scan=True
 
 # Function to change motor speed
 def change_speed(duty_cycle):
@@ -97,42 +97,32 @@ while(True):
                 
                 if ( (0 < angle) and (angle < Right_angle_threshhold)) and (distance<OBSTACLE_THRESHOLD):
                     right_object_detected = True
-        #             print("Right Detected. Angle:",angle, "Distance: ", distance)
                 elif ((Left_angle_threshhold < angle) and (angle < 360)) and (distance<OBSTACLE_THRESHOLD):
                     left_object_detected = True
                     
             print("Right: ", right_object_detected, ", Left:", left_object_detected)
-            
-            
-            
-            if(motion_happened==True)
-                go_forward()
-                motion_happened==False
+
+            if(ignore_scan==True)
+                #go_forward()
+                ignore_scan=False
             elif right_object_detected and left_object_detected:
-                #go_left(2)
                 print("Full left")
-                time.sleep(2)
+                go_left(2)
             elif right_object_detected :
-        #         go_left(1.5)
                 print("Go left")
-                time.sleep(1.5)
+                go_left(1.5)
             elif left_object_detected:
-        #         go_right(1.5) 
                 print("Go right")
-                time.sleep(1.5)
-            else :
-        #         go_forward()
+                go_right(1.5) 
+            else:
                 print("Forward")
-    except RPLidarException:
+                go_forward()
+                
+    except Exception:
         lidar.stop()
         lidar.disconnect()
         lidar = RPLidar('/dev/ttyUSB0')
-
-        
-    #if scanNo >= 100:
-      #  break
-
-# scan = lidar.iter_scans()
+        ignore_scan = True
 
 lidar.stop()
 lidar.stop_motor()
