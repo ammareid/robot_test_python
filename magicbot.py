@@ -102,7 +102,7 @@ while(True):
                     
             print("Right: ", right_object_detected, ", Left:", left_object_detected)
 
-            if(ignore_scan==True)
+            if(ignore_scan==True):
                 #go_forward()
                 ignore_scan=False
             elif right_object_detected and left_object_detected:
